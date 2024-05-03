@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  wallet        String          @unique
+  username      String          @unique 
+  avatar        String?
+  cover         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  active        Boolean?        @default(true)
+  seller_marketorders  marketorders[]   @relation("seller_marketorders")
+  buyer_marketorders   marketorders[]     @relation("buyer_marketorders")
+  from_friends  friends[]       @relation("from_friends")
+  to_friends    friends[]       @relation("to_friends")
+  collections   collections[]
+  creator_tokens tokens[]       @relation("creator_tokens")
+  owner_tokens   tokens[]       @relation("owner_tokens")
+  messages      messages[]
+  firstUser_chats         chats[]         @relation("firstUser_chats")
+  secondUser_chats        chats[]         @relation("secondUser_chats")
+}
+
+model collections {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  collectionID        String?         @unique
+  creatorCollection   String          
+  chainID             String
+  title               String
+  title_lowercase     String      
+  description         String?
+  bannerURL           String?
+  averagePrice        Float           @default(0)
+  totalViews          Int             @default(0)
+  category            String?
+  paymentType         String?
+  contractAddress     String?
+  active              Boolean?        @default(true)
+  disabled            Boolean?        @default(false)
+  package             Json[]
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  creator             users           @relation(fields: [creatorCollection], references: [wallet])
+  tokens              tokens[]
+}
+
+model tokens {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  tokenID             String?         @unique
+  creator             String          
+  owner               String         
+  collectionID        String          
+  chainID             String
+  title               String          @unique
+  title_lowercase     String      
+  description         String?
+  source              String?
+  mode                String?
+  contractAddress     String?
+  active              Boolean?        @default(true)
+  disabled            Boolean?        @default(false)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  listOfLikedUsers    String[] 
+  listOfFavoriteUsers    String[]    
+  totalViews          Int             @default(0)
+  totalShares         Int             @default(0)
+  marketorders        marketorders[]
+  creatorWallet       users         @relation("creator_tokens", fields: [creator], references: [wallet])
+  ownerWallet         users         @relation("owner_tokens", fields: [owner], references: [wallet])
+  collection          collections   @relation(fields: [collectionID], references: [collectionID])
+}
+
+model marketorders {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  tokenID             String          @unique
+  chainID             String
+  tokenAddress        String
+  buyer               String?          
+  seller              String  
+  paymentType         String
+  event               Int?
+  status              Int          
+  price               Float
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  buyerWallet         users?          @relation("buyer_marketorders", fields: [buyer], references: [wallet])
+  sellerWallet        users           @relation("seller_marketorders", fields: [seller], references: [wallet])
+  tokens              tokens          @relation(fields: [tokenID], references: [tokenID])
+}
+
+model friends {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  chainID             String
+  from                String          
+  to                  String  
+  status              Int         
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  requester           users           @relation("from_friends", fields: [from], references: [wallet])
+  recipient           users           @relation("to_friends", fields: [to], references: [wallet])
+}
+
+model chats {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  firstUser           String          
+  secondUser          String        
+  messages            messages[]  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  firstUserWallet     users           @relation("firstUser_chats", fields: [firstUser], references: [wallet])
+  secondUserWallet    users           @relation("secondUser_chats", fields: [secondUser], references: [wallet])
+}
+
+model messages {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  chatID              String
+  content             String   
+  senderID            String
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  chat                chats           @relation(fields: [chatID], references: [id])
+  sender              users           @relation(fields: [senderID], references: [wallet])
+}
