@@ -528,20 +528,21 @@ class UserService {
 
       let marketPackage = await prisma.marketpackages.create({
         data: {
-          subscriber: { connect: { wallet: userWallet } },
           chainID: chainID,
-          collectionID: collectionID,
           paymentType: paymentType,
           packageType: packageType,
           status: status,
           price: price,
-          seller: seller
+          subscriberWallet: { connect: { wallet: userWallet }} ,
+          sellerWallet: { connect: { wallet: seller }},
+          collection: collectionID ? { connect: { collectionID: collectionID } } : null
         }
       })
 
       return marketPackage;
 
     } catch (err) {
+      console.log(err)
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
     }
   }
@@ -603,6 +604,7 @@ class UserService {
 
       return marketPackages;
     } catch (err) {
+      console.log(err);
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
     }
   }
