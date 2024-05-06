@@ -42,7 +42,10 @@ class CollectionService {
     }
   }
 
-  async calcAvgPrice(collections) {
+  async calcAvgPrice(where) {
+    try {
+      let collections = await prisma.collections.findMany({ where });
+
       await Promise.all(collections.map(async (collection) => {
         // calculate average price of a collection with active tokens
         const tokens = await prisma.tokens.findMany({
@@ -56,9 +59,9 @@ class CollectionService {
     
         const orders = await prisma.marketorders.findMany({
             where: {
-                tokenID: {
-                    in: tokenIDs
-                }
+              tokenID: {
+                in: tokenIDs
+              }
             },
             select: {
                 price: true
@@ -67,7 +70,6 @@ class CollectionService {
     
         const totalPrices = orders.reduce((acc, order) => acc + order.price, 0);
         const avgPrice = totalPrices / orders.length;
-        console.log(JSON.parse(avgPrice));
     
         // Update the averagePrice field of the collection
         await prisma.collections.update({
@@ -75,10 +77,15 @@ class CollectionService {
                 collectionID: collection.collectionID
             },
             data: {
-                averagePrice: avgPrice
+              averagePrice: avgPrice ? avgPrice : 0
             }
         });
-    }));
+      }));
+    }
+    catch (err) {
+      console.log(err);
+      throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async getCollections({ limit, offset, orderBy, chainID, title, creatorCollection, category, active }) {
@@ -138,14 +145,15 @@ class CollectionService {
       } else {
         count = await prisma.collections.count({ where: { disabled: false, chainID: chainID } });
       }
+      
+      await this.calcAvgPrice(where);
+
       let collections = await prisma.collections.findMany({
         where,
         orderBy,
         take: limit,
         skip: offset
       });
-
-      await this.calcAvgPrice(collections);
 
       // await collections.forEach(async (collection) => {
       //   const aggregations = await prisma.marketorders.aggregate({
@@ -233,14 +241,15 @@ class CollectionService {
       } else {
         count = await prisma.collections.count({ where: { disabled: false, chainID: chainID } });
       }
+
+      await this.calcAvgPrice(where);
+
       let collections = await prisma.collections.findMany({
         where,
         orderBy,
         take: limit,
         skip: offset
       });
-
-      await this.calcAvgPrice(collections);
 
       return {
         collections,
@@ -276,11 +285,14 @@ class CollectionService {
   async collectionExists(params) {
     try {
       let { title } = params;
+      let where = { title_lowercase: title.toLowerCase() };
+
+      await this.calcAvgPrice(where);
+
       let collections = await prisma.collections.findMany({
-        where: { title_lowercase: title.toLowerCase() },
+        where,
       });
 
-      await this.calcAvgPrice(collections);
 
       return collections;
     } catch (err) {
@@ -313,25 +325,28 @@ class CollectionService {
     try {
       let title = params;
 
+      let where = {
+        OR: [
+          {
+            title: {
+              contains: title,
+            }
+          },
+          {
+            title_lowercase: {
+              contains: title,
+            }
+          },
+        ],
+        active: true
+      }
+
+      await this.calcAvgPrice(where);
+
       const collections = await prisma.collections.findMany({
-        where: {
-          OR: [
-            {
-              title: {
-                contains: title,
-              }
-            },
-            {
-              title_lowercase: {
-                contains: title,
-              }
-            },
-          ],
-          active: true
-        },
+        where
       });
 
-      await this.calcAvgPrice(collections);
 
       return collections;
     } catch (err) {
@@ -343,11 +358,14 @@ class CollectionService {
   async getCollectionByCollectionID(params) {
     try {
       let { collectionID } = params;
+      let where = { collectionID: collectionID };
+
+      await this.calcAvgPrice(where);
+
       let collections = await prisma.collections.findMany({
-        where: { collectionID: collectionID },
+        where,
       });
 
-      await this.calcAvgPrice(collections);
 
       return collections.at(0);
     } catch (err) {
@@ -359,11 +377,15 @@ class CollectionService {
   async getCollectionByID(params) {
     try {
       let { id } = params;
+
+      let where = { id: id };
+
+      await this.calcAvgPrice(where);
+
       let collections = await prisma.collections.findMany({
-        where: { id: id },
+        where,
       });
 
-      await this.calcAvgPrice(collections);
 
       return collections.at(0);
     } catch (err) {
