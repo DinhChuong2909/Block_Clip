@@ -31,9 +31,7 @@ const upload = require("../utils/upload");
 router.post(
   "/login",
   [
-    check("wallet", "A valid address is required")
-      .exists()
-      .isEthereumAddress(),
+    check("wallet", "A valid address is required").exists().isEthereumAddress(),
     check("signature", "A valid signature is required")
       .exists()
       .isLength({ min: 132, max: 132 }),
@@ -58,9 +56,13 @@ router.post(
             signature: req.body.signature,
           })
         ) {
-          var token = jwt.sign({ userWallet: userExists.wallet }, config.secret, {
-            expiresIn: constants.JWT_EXPIRY,
-          });
+          var token = jwt.sign(
+            { userWallet: userExists.wallet },
+            config.secret,
+            {
+              expiresIn: constants.JWT_EXPIRY,
+            }
+          );
           return res.status(constants.RESPONSE_STATUS_CODES.OK).json({
             message: constants.RESPONSE_STATUS.SUCCESS,
             data: userExists,
@@ -129,12 +131,10 @@ router.get("/details", verifyToken, async (req, res) => {
   try {
     let userWallet = req.userWallet;
     let users = await userServiceInstance.getUser({ userWallet });
-    return res
-      .status(constants.RESPONSE_STATUS_CODES.OK)
-      .json({ 
-        message: constants.RESPONSE_STATUS.SUCCESS, 
-        data: users 
-      });
+    return res.status(constants.RESPONSE_STATUS_CODES.OK).json({
+      message: constants.RESPONSE_STATUS.SUCCESS,
+      data: users,
+    });
   } catch (err) {
     console.log(err);
     return res
@@ -147,48 +147,47 @@ router.get("/details", verifyToken, async (req, res) => {
  *  Gets the user details by wallet
  */
 
-router.get(
-  "/:wallet", 
-  [check("wallet", "A valid id is required").exists()],
-  async (req, res) => {
-  try {
-    const errors = validationResult(req);
+// router.get(
+//   "/:wallet",
+//   [check("wallet", "A valid id is required").exists()],
+//   async (req, res) => {
+//   try {
+//     const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-      return res
-        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
-        .json({ error: errors.array() });
-    }
+//     if (!errors.isEmpty()) {
+//       return res
+//         .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+//         .json({ error: errors.array() });
+//     }
 
-    let wallet = req.params.wallet;
+//     let wallet = req.params.wallet;
 
-    if (!validate.isValidEthereumAddress(wallet)) {
-      return res
-      .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
-      .json({ message: 'wallet is not valid' });
-  }
+//     if (!validate.isValidEthereumAddress(wallet)) {
+//       return res
+//       .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+//       .json({ message: 'wallet is not valid' });
+//   }
 
-    let users = await userServiceInstance.getUser({ userWallet: wallet });
+//     let users = await userServiceInstance.getUser({ userWallet: wallet });
 
-    if (users) {
-      return res.status(constants.RESPONSE_STATUS_CODES.OK).json({
-        message: constants.RESPONSE_STATUS.SUCCESS,
-        data: users
-      });
-    } else {
-      return res
-        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
-        .json({ message: constants.RESPONSE_STATUS.FAILURE });
-    }
-    
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
-      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
-  }
-});
+//     if (users) {
+//       return res.status(constants.RESPONSE_STATUS_CODES.OK).json({
+//         message: constants.RESPONSE_STATUS.SUCCESS,
+//         data: users
+//       });
+//     } else {
+//       return res
+//         .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+//         .json({ message: constants.RESPONSE_STATUS.FAILURE });
+//     }
 
+//   } catch (err) {
+//     console.log(err);
+//     return res
+//       .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+//       .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+//   }
+// });
 
 /**
  *  Gets all the user details
@@ -207,23 +206,22 @@ router.get("/", async (req, res) => {
       offset,
       orderBy,
       username,
-      wallet
-    })
+      wallet,
+    });
 
     if (users) {
       return res.status(constants.RESPONSE_STATUS_CODES.OK).json({
         message: constants.RESPONSE_STATUS.SUCCESS,
         data: {
           users: users.users,
-          count: users.count
-        }
+          count: users.count,
+        },
       });
     } else {
       return res
         .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
         .json({ message: constants.RESPONSE_STATUS.FAILURE });
     }
-    
   } catch (err) {
     console.log(err);
     return res
@@ -236,40 +234,35 @@ router.get("/", async (req, res) => {
  *  Updates an existing user by wallet
  */
 
-router.put("/",
-  verifyToken,
-  async (req, res) => {
-    try {
-      let params = { userWallet: req.userWallet, ...req.body };
+router.put("/", verifyToken, async (req, res) => {
+  try {
+    let params = { userWallet: req.userWallet, ...req.body };
 
-      let userExists = await userServiceInstance.userExists(params);
+    let userExists = await userServiceInstance.userExists(params);
 
-      if (userExists.length === 0) {
-        return res
-          .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
-          .json({ message: "user doesnt exists" });
-      }
-
-      let user = await userServiceInstance.updateUser(
-        params
-      );
-      if (user) {
-        return res
-          .status(constants.RESPONSE_STATUS_CODES.OK)
-          .json({ message: "user updated successfully", data: user });
-      } else {
-        return res
-          .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
-          .json({ message: "user update failed" });
-      }
-    } catch (err) {
-      console.log(err);
+    if (userExists.length === 0) {
       return res
-        .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+        .json({ message: "user doesnt exists" });
     }
+
+    let user = await userServiceInstance.updateUser(params);
+    if (user) {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.OK)
+        .json({ message: "user updated successfully", data: user });
+    } else {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+        .json({ message: "user update failed" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
   }
-);
+});
 
 /**
  *  Post avatar of user
@@ -305,32 +298,26 @@ router.post(
  *  Post cover of user
  */
 
-router.post(
-  "/cover",
-  verifyToken,
-  upload.single("cover"),
-  async (req, res) => {
-    try {
-      let cover = requestUtil.getFileURL(req.file);
+router.post("/cover", verifyToken, upload.single("cover"), async (req, res) => {
+  try {
+    let cover = requestUtil.getFileURL(req.file);
 
-
-      if (cover) {
-        return res
-          .status(constants.RESPONSE_STATUS_CODES.OK)
-          .json({ message: constants.RESPONSE_STATUS.SUCCESS, data: cover });
-      } else {
-        return res
-          .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
-          .json({ message: constants.RESPONSE_STATUS.FAILURE });
-      }
-    } catch (err) {
-      console.log(err);
+    if (cover) {
       return res
-        .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+        .status(constants.RESPONSE_STATUS_CODES.OK)
+        .json({ message: constants.RESPONSE_STATUS.SUCCESS, data: cover });
+    } else {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+        .json({ message: constants.RESPONSE_STATUS.FAILURE });
     }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
   }
-);
+});
 
 router.get("/notification", verifyToken, async (req, res) => {
   try {
@@ -341,17 +328,18 @@ router.get("/notification", verifyToken, async (req, res) => {
     if (notifications) {
       return res
         .status(constants.RESPONSE_STATUS_CODES.OK)
-        .json({ message: constants.RESPONSE_STATUS.SUCCESS, data: notifications });
+        .json({
+          message: constants.RESPONSE_STATUS.SUCCESS,
+          data: notifications,
+        });
     }
-
   } catch (err) {
     console.log(err);
     return res
-        .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
   }
 });
-
 
 // user Subscrible to a collection
 // Done
@@ -375,52 +363,94 @@ router.post("/subscriber", verifyToken, async (req, res) => {
   } catch (err) {
     console.log(err);
     return res
-        .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
   }
 });
+
+// lấy danh sách giao dịch đki của user 
+// done
 
 router.get("/subscribers", verifyToken, async (req, res) => {
   try {
     let params = { userWallet: req.userWallet, ...req.body };
+    let subscribers;
+    await userServiceInstance.checkExpire(params);
 
-    let subscribers = await userServiceInstance.getSubscriber(params);
+    subscribers = await userServiceInstance.getSubscriber(params);
 
     if (subscribers) {
       return res
         .status(constants.RESPONSE_STATUS_CODES.OK)
-        .json({ message: constants.RESPONSE_STATUS.SUCCESS, data: subscribers });
+        .json({
+          message: constants.RESPONSE_STATUS.SUCCESS,
+          data: subscribers,
+        });
     }
-
   } catch (err) {
     console.log(err);
     return res
-        .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
   }
-
 });
 
-router.get("/subscribers/:subscriberID",[check("subscriberID", "A valid id is required").exists()] ,verifyToken, async (req, res) => {
+// lấy danh sách giao dịch đki của user by ID
+// done
+
+router.get("/subscribers/:subscriberID", verifyToken, async (req, res) => {
   try {
     let id = req.params.subscriberID;
     let params = { userWallet: req.userWallet, id };
+
+    await userServiceInstance.checkExpire(params);
 
     let subscribers = await userServiceInstance.getSubscriberByID(params);
 
     if (subscribers) {
       return res
         .status(constants.RESPONSE_STATUS_CODES.OK)
-        .json({ message: constants.RESPONSE_STATUS.SUCCESS, data: subscribers });
+        .json({
+          message: constants.RESPONSE_STATUS.SUCCESS,
+          data: subscribers,
+        });
     }
-
   } catch (err) {
     console.log(err);
     return res
-        .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
   }
+});
 
+
+// http://localhost:3001/api/v1/users/subscribed/?collectionID=2
+// Check coi user đó có đăng ký gói nào của collection. Trả về gói đó
+// Done
+router.get("/subscribed", verifyToken, async (req, res) => {
+  try {
+    const collectionID = req.query.collectionID;
+    let params = { userWallet: req.userWallet, collectionID };
+    let packageType = await userServiceInstance.getPackageType(params);
+
+    if (packageType) {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.OK)
+        .json({
+          message: constants.RESPONSE_STATUS.SUCCESS,
+          data: packageType,
+        });
+    } else {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+        .json({ message: constants.RESPONSE_STATUS.FAILURE });
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
+  }
 });
 
 module.exports = router;

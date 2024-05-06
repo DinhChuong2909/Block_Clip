@@ -13,8 +13,8 @@ class UserService {
       let { wallet } = params;
       let user = await prisma.users.create({
         data: {
-            wallet: wallet,
-            username: wallet
+          wallet: wallet,
+          username: wallet,
         },
       });
       return user;
@@ -29,11 +29,11 @@ class UserService {
       let where = {
         active: true,
         username: {
-          contains: username
+          contains: username,
         },
         wallet: {
-          contains: wallet
-        }
+          contains: wallet,
+        },
       };
 
       let count = await prisma.users.count({ where });
@@ -72,317 +72,317 @@ class UserService {
     }
   }
 
-//   async getUsersMakerOrders({ userId, limit, offset, orderBy }) {
-//     try {
-//       let count = await prisma.orders.count({
-//         where: { AND: [{ seller: parseInt(userId) }, { active: true }] },
-//       });
-//       let orders = await prisma.users.findMany({
-//         where: {
-//           id: parseInt(userId),
-//         },
-//         select: {
-//           seller_orders: {
-//             where: {
-//               active: true,
-//             },
-//             include: {
-//               categories: {
-//                 include: {
-//                   categoriesaddresses: {
-//                     where: { chain_id: constants.MATIC_CHAIN_ID },
-//                     select: { address: true, ethereum_address: true },
-//                   },
-//                 },
-//               },
-//               erc20tokens: {
-//                 include: {
-//                   erc20tokensaddresses: {
-//                     where: { chain_id: constants.MATIC_CHAIN_ID },
-//                     select: { address: true },
-//                   },
-//                 },
-//               },
-//             },
-//             orderBy,
-//             take: limit,
-//             skip: offset,
-//           },
-//         },
-//       });
+  //   async getUsersMakerOrders({ userId, limit, offset, orderBy }) {
+  //     try {
+  //       let count = await prisma.orders.count({
+  //         where: { AND: [{ seller: parseInt(userId) }, { active: true }] },
+  //       });
+  //       let orders = await prisma.users.findMany({
+  //         where: {
+  //           id: parseInt(userId),
+  //         },
+  //         select: {
+  //           seller_orders: {
+  //             where: {
+  //               active: true,
+  //             },
+  //             include: {
+  //               categories: {
+  //                 include: {
+  //                   categoriesaddresses: {
+  //                     where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                     select: { address: true, ethereum_address: true },
+  //                   },
+  //                 },
+  //               },
+  //               erc20tokens: {
+  //                 include: {
+  //                   erc20tokensaddresses: {
+  //                     where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                     select: { address: true },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //             orderBy,
+  //             take: limit,
+  //             skip: offset,
+  //           },
+  //         },
+  //       });
 
-//       return {
-//         orders,
-//         limit,
-//         offset,
-//         has_next_page: hasNextPage({ limit, offset, count }),
-//       };
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //       return {
+  //         orders,
+  //         limit,
+  //         offset,
+  //         has_next_page: hasNextPage({ limit, offset, count }),
+  //       };
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async getUsersActiveOrders({ userId, limit, offset, orderBy }) {
-//     try {
-//       let count = await prisma.orders.count({
-//         where: {
-//           AND: [{ seller: parseInt(userId) }, { active: true }, { status: 0 }],
-//         },
-//       });
-//       let orders = await prisma.users.findMany({
-//         where: {
-//           id: parseInt(userId),
-//         },
-//         select: {
-//           seller_orders: {
-//             where: {
-//               active: true,
-//               status: 0,
-//             },
-//             include: {
-//               categories: {
-//                 include: {
-//                   categoriesaddresses: {
-//                     where: { chain_id: constants.MATIC_CHAIN_ID },
-//                     select: { address: true, ethereum_address: true },
-//                   },
-//                 },
-//               },
-//               erc20tokens: {
-//                 include: {
-//                   erc20tokensaddresses: {
-//                     where: { chain_id: constants.MATIC_CHAIN_ID },
-//                     select: { address: true },
-//                   },
-//                 },
-//               },
-//             },
-//             orderBy,
-//             take: limit,
-//             skip: offset,
-//           },
-//         },
-//       });
+  //   async getUsersActiveOrders({ userId, limit, offset, orderBy }) {
+  //     try {
+  //       let count = await prisma.orders.count({
+  //         where: {
+  //           AND: [{ seller: parseInt(userId) }, { active: true }, { status: 0 }],
+  //         },
+  //       });
+  //       let orders = await prisma.users.findMany({
+  //         where: {
+  //           id: parseInt(userId),
+  //         },
+  //         select: {
+  //           seller_orders: {
+  //             where: {
+  //               active: true,
+  //               status: 0,
+  //             },
+  //             include: {
+  //               categories: {
+  //                 include: {
+  //                   categoriesaddresses: {
+  //                     where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                     select: { address: true, ethereum_address: true },
+  //                   },
+  //                 },
+  //               },
+  //               erc20tokens: {
+  //                 include: {
+  //                   erc20tokensaddresses: {
+  //                     where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                     select: { address: true },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //             orderBy,
+  //             take: limit,
+  //             skip: offset,
+  //           },
+  //         },
+  //       });
 
-//       return {
-//         orders,
-//         limit,
-//         offset,
-//         has_next_page: hasNextPage({ limit, offset, count }),
-//       };
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //       return {
+  //         orders,
+  //         limit,
+  //         offset,
+  //         has_next_page: hasNextPage({ limit, offset, count }),
+  //       };
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async getUsersTakerOrders({ userId, limit, offset, orderBy }) {
-//     try {
-//       let count = await prisma.orders.count({
-//         where: { AND: [{ buyer: parseInt(userId) }, { active: true }] },
-//       });
-//       let orders = await prisma.users.findMany({
-//         where: {
-//           id: parseInt(userId),
-//         },
-//         select: {
-//           buyer_orders: {
-//             where: {
-//               active: true,
-//             },
-//             include: {
-//               categories: {
-//                 include: {
-//                   categoriesaddresses: {
-//                     where: { chain_id: constants.MATIC_CHAIN_ID },
-//                     select: { address: true, ethereum_address: true },
-//                   },
-//                 },
-//               },
-//               erc20tokens: {
-//                 include: {
-//                   erc20tokensaddresses: {
-//                     where: { chain_id: constants.MATIC_CHAIN_ID },
-//                     select: { address: true },
-//                   },
-//                 },
-//               },
-//             },
-//             orderBy,
-//             take: limit,
-//             skip: offset,
-//           },
-//         },
-//       });
+  //   async getUsersTakerOrders({ userId, limit, offset, orderBy }) {
+  //     try {
+  //       let count = await prisma.orders.count({
+  //         where: { AND: [{ buyer: parseInt(userId) }, { active: true }] },
+  //       });
+  //       let orders = await prisma.users.findMany({
+  //         where: {
+  //           id: parseInt(userId),
+  //         },
+  //         select: {
+  //           buyer_orders: {
+  //             where: {
+  //               active: true,
+  //             },
+  //             include: {
+  //               categories: {
+  //                 include: {
+  //                   categoriesaddresses: {
+  //                     where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                     select: { address: true, ethereum_address: true },
+  //                   },
+  //                 },
+  //               },
+  //               erc20tokens: {
+  //                 include: {
+  //                   erc20tokensaddresses: {
+  //                     where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                     select: { address: true },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //             orderBy,
+  //             take: limit,
+  //             skip: offset,
+  //           },
+  //         },
+  //       });
 
-//       return {
-//         orders,
-//         limit,
-//         offset,
-//         has_next_page: hasNextPage({ limit, offset, count }),
-//       };
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //       return {
+  //         orders,
+  //         limit,
+  //         offset,
+  //         has_next_page: hasNextPage({ limit, offset, count }),
+  //       };
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async getUsersBids({ userId, limit, offset, orderBy }) {
-//     try {
-//       let count = await prisma.bids.count({
-//         where: { AND: [{ users_id: parseInt(userId) }, { active: true }] },
-//       });
-//       let bids = await prisma.users.findMany({
-//         where: {
-//           id: parseInt(userId),
-//         },
-//         select: {
-//           bids: {
-//             where: {
-//               active: true,
-//             },
-//             orderBy,
-//             take: limit,
-//             skip: offset,
-//           },
-//         },
-//       });
+  //   async getUsersBids({ userId, limit, offset, orderBy }) {
+  //     try {
+  //       let count = await prisma.bids.count({
+  //         where: { AND: [{ users_id: parseInt(userId) }, { active: true }] },
+  //       });
+  //       let bids = await prisma.users.findMany({
+  //         where: {
+  //           id: parseInt(userId),
+  //         },
+  //         select: {
+  //           bids: {
+  //             where: {
+  //               active: true,
+  //             },
+  //             orderBy,
+  //             take: limit,
+  //             skip: offset,
+  //           },
+  //         },
+  //       });
 
-//       return {
-//         bids,
-//         limit,
-//         offset,
-//         has_next_page: hasNextPage({ limit, offset, count }),
-//       };
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //       return {
+  //         bids,
+  //         limit,
+  //         offset,
+  //         has_next_page: hasNextPage({ limit, offset, count }),
+  //       };
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async getUsersFavourite({ userId, limit, offset, orderBy }) {
-//     try {
-//       let count = await prisma.favourites.count({
-//         where: { AND: [{ users_id: parseInt(userId) }] },
-//       });
-//       let favourites = await prisma.users.findMany({
-//         where: {
-//           id: parseInt(userId),
-//         },
-//         select: {
-//           favourites: {
-//             orderBy,
-//             take: limit,
-//             skip: offset,
-//             include: {
-//               orders: {
-//                 include: {
-//                   categories: {
-//                     include: {
-//                       categoriesaddresses: {
-//                         where: { chain_id: constants.MATIC_CHAIN_ID },
-//                         select: { address: true, ethereum_address: true },
-//                       },
-//                     },
-//                   },
-//                   erc20tokens: {
-//                     include: {
-//                       erc20tokensaddresses: {
-//                         where: { chain_id: constants.MATIC_CHAIN_ID },
-//                         select: { address: true },
-//                       },
-//                     },
-//                   },
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       });
+  //   async getUsersFavourite({ userId, limit, offset, orderBy }) {
+  //     try {
+  //       let count = await prisma.favourites.count({
+  //         where: { AND: [{ users_id: parseInt(userId) }] },
+  //       });
+  //       let favourites = await prisma.users.findMany({
+  //         where: {
+  //           id: parseInt(userId),
+  //         },
+  //         select: {
+  //           favourites: {
+  //             orderBy,
+  //             take: limit,
+  //             skip: offset,
+  //             include: {
+  //               orders: {
+  //                 include: {
+  //                   categories: {
+  //                     include: {
+  //                       categoriesaddresses: {
+  //                         where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                         select: { address: true, ethereum_address: true },
+  //                       },
+  //                     },
+  //                   },
+  //                   erc20tokens: {
+  //                     include: {
+  //                       erc20tokensaddresses: {
+  //                         where: { chain_id: constants.MATIC_CHAIN_ID },
+  //                         select: { address: true },
+  //                       },
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       });
 
-//       return {
-//         favourites: favourites[0].favourites,
-//         limit,
-//         offset,
-//         has_next_page: hasNextPage({ limit, offset, count }),
-//       };
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //       return {
+  //         favourites: favourites[0].favourites,
+  //         limit,
+  //         offset,
+  //         has_next_page: hasNextPage({ limit, offset, count }),
+  //       };
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async createUsersFavourite(params) {
-//     try {
-//       let { userId, orderId } = params;
-//       let favourites = await prisma.favourites.create({
-//         data: {
-//           users: {
-//             connect: {
-//               id: parseInt(userId),
-//             },
-//           },
-//           orders: {
-//             connect: {
-//               id: parseInt(orderId),
-//             },
-//           },
-//           updated: new Date(),
-//         },
-//       });
-//       return favourites;
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //   async createUsersFavourite(params) {
+  //     try {
+  //       let { userId, orderId } = params;
+  //       let favourites = await prisma.favourites.create({
+  //         data: {
+  //           users: {
+  //             connect: {
+  //               id: parseInt(userId),
+  //             },
+  //           },
+  //           orders: {
+  //             connect: {
+  //               id: parseInt(orderId),
+  //             },
+  //           },
+  //           updated: new Date(),
+  //         },
+  //       });
+  //       return favourites;
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async deleteUsersFavourite(params) {
-//     try {
-//       let { favouriteId } = params;
-//       let favourite = await prisma.favourites.delete({
-//         where: { id: parseInt(favouriteId) },
-//       });
-//       return favourite;
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //   async deleteUsersFavourite(params) {
+  //     try {
+  //       let { favouriteId } = params;
+  //       let favourite = await prisma.favourites.delete({
+  //         where: { id: parseInt(favouriteId) },
+  //       });
+  //       return favourite;
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async getFavourite(params) {
-//     try {
-//       let { favouriteId } = params;
-//       let favourite = await prisma.favourites.findOne({
-//         where: {
-//           id: parseInt(favouriteId),
-//         },
-//       });
-//       return favourite;
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //   async getFavourite(params) {
+  //     try {
+  //       let { favouriteId } = params;
+  //       let favourite = await prisma.favourites.findOne({
+  //         where: {
+  //           id: parseInt(favouriteId),
+  //         },
+  //       });
+  //       return favourite;
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async favouriteExists(params) {
-//     try {
-//       let { userId, orderId } = params;
-//       let favourite = await prisma.favourites.findMany({
-//         where: {
-//           AND: [
-//             { users_id: parseInt(userId) },
-//             { order_id: parseInt(orderId) },
-//           ],
-//         },
-//       });
-//       return favourite;
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //   async favouriteExists(params) {
+  //     try {
+  //       let { userId, orderId } = params;
+  //       let favourite = await prisma.favourites.findMany({
+  //         where: {
+  //           AND: [
+  //             { users_id: parseInt(userId) },
+  //             { order_id: parseInt(orderId) },
+  //           ],
+  //         },
+  //       });
+  //       return favourite;
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
   async userExists(params) {
     try {
@@ -399,84 +399,92 @@ class UserService {
     }
   }
 
-//   async getUserNotification({ userId, limit, offset, orderBy }) {
-//     try {
-//       let count = await prisma.notifications.count({
-//         where: {
-//           usersId: parseInt(userId),
-//         },
-//       });
+  //   async getUserNotification({ userId, limit, offset, orderBy }) {
+  //     try {
+  //       let count = await prisma.notifications.count({
+  //         where: {
+  //           usersId: parseInt(userId),
+  //         },
+  //       });
 
-//       let unread_count = await prisma.notifications.count({
-//         where: {
-//           usersId: parseInt(userId),
-//           read: false,
-//         },
-//       });
-//       let notifications = await prisma.notifications.findMany({
-//         where: {
-//           usersId: parseInt(userId),
-//         },
-//         select: {
-//           read: true,
-//           id: true,
-//           active: true,
-//           created: true,
-//           message: true,
-//           updated: true,
-//           usersId: true,
-//           order_id: true,
-//           type: true,
-//           orders: {
-//             select: { type: true, txhash: true, categories: { select: { img_url: true } } },
-//           },
-//         },
-//         orderBy: { created: constants.SORT_DIRECTION.DESC },
-//         take: limit,
-//         skip: offset,
-//       });
+  //       let unread_count = await prisma.notifications.count({
+  //         where: {
+  //           usersId: parseInt(userId),
+  //           read: false,
+  //         },
+  //       });
+  //       let notifications = await prisma.notifications.findMany({
+  //         where: {
+  //           usersId: parseInt(userId),
+  //         },
+  //         select: {
+  //           read: true,
+  //           id: true,
+  //           active: true,
+  //           created: true,
+  //           message: true,
+  //           updated: true,
+  //           usersId: true,
+  //           order_id: true,
+  //           type: true,
+  //           orders: {
+  //             select: { type: true, txhash: true, categories: { select: { img_url: true } } },
+  //           },
+  //         },
+  //         orderBy: { created: constants.SORT_DIRECTION.DESC },
+  //         take: limit,
+  //         skip: offset,
+  //       });
 
-//       return {
-//         notifications,
-//         limit,
-//         offset,
-//         has_next_page: hasNextPage({ limit, offset, count }),
-//         unread_count,
-//       };
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //       return {
+  //         notifications,
+  //         limit,
+  //         offset,
+  //         has_next_page: hasNextPage({ limit, offset, count }),
+  //         unread_count,
+  //       };
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
 
-//   async readUserNotification({ userId }) {
-//     try {
-//       let notifications = await prisma.notifications.updateMany({
-//         where: {
-//           read: false,
-//           usersId: parseInt(userId),
-//         },
-//         data: { read: true },
-//       });
+  //   async readUserNotification({ userId }) {
+  //     try {
+  //       let notifications = await prisma.notifications.updateMany({
+  //         where: {
+  //           read: false,
+  //           usersId: parseInt(userId),
+  //         },
+  //         data: { read: true },
+  //       });
 
-//       return notifications;
-//     } catch (err) {
-//       console.log(err);
-//       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  //       return notifications;
+  //     } catch (err) {
+  //       console.log(err);
+  //       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+  //     }
+  //   }
   async updateUser(params) {
     try {
       let current = await this.getUser(params);
-      let { username: current_username, avatar: current_avatar, cover: current_cover, active: current_active } = current;
-      let { username: params_username, avatar: params_avatar, cover: params_cover, active: params_active } = params;
+      let {
+        username: current_username,
+        avatar: current_avatar,
+        cover: current_cover,
+        active: current_active,
+      } = current;
+      let {
+        username: params_username,
+        avatar: params_avatar,
+        cover: params_cover,
+        active: params_active,
+      } = params;
 
       let user = await prisma.users.update({
         where: { wallet: params.userWallet },
         data: {
-          cover: params_cover
-            ? params_cover
-            : current_cover,
+          cover: params_cover ? params_cover : current_cover,
           active: params_active ? params_active : current_active,
           avatar: params_avatar ? params_avatar : current_avatar,
           username: params_username ? params_username : current_username,
@@ -492,20 +500,20 @@ class UserService {
   // get notifications of a user by type, limit, offset
   async getNotifications(params) {
     try {
-      let { userWallet, limit, offset, type} = params;
+      let { userWallet, limit, offset, type } = params;
 
-      console.log(userWallet, limit, offset, type)
+      console.log(userWallet, limit, offset, type);
 
       let where = {
         wallet: {
-          equals: userWallet, 
+          equals: userWallet,
         },
         type: {
-          equals: type
-        }
-      }
+          equals: type,
+        },
+      };
 
-      let notification = await prisma.notifications.findMany({ 
+      let notification = await prisma.notifications.findMany({
         where,
         take: limit,
         skip: offset,
@@ -514,17 +522,24 @@ class UserService {
       if (!notification) {
         throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
       }
-
     } catch (err) {
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
     }
   }
 
-
   // User subscribe a collection
   async subscribeCollection(params) {
     try {
-      let { userWallet, chainID, collectionID, paymentType, packageType, status, price, seller} = params
+      let {
+        userWallet,
+        chainID,
+        collectionID,
+        paymentType,
+        packageType,
+        status,
+        price,
+        seller,
+      } = params;
 
       let marketPackage = await prisma.marketpackages.create({
         data: {
@@ -533,56 +548,113 @@ class UserService {
           packageType: packageType,
           status: status,
           price: price,
-          subscriberWallet: { connect: { wallet: userWallet }} ,
-          sellerWallet: { connect: { wallet: seller }},
-          collection: collectionID ? { connect: { collectionID: collectionID } } : null
-        }
-      })
+          subscriberWallet: { connect: { wallet: userWallet } },
+          sellerWallet: { connect: { wallet: seller } },
+          collection: collectionID
+            ? { connect: { collectionID: collectionID } }
+            : null,
+        },
+      });
 
       return marketPackage;
-
     } catch (err) {
-      console.log(err)
+      console.log(err);
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
     }
   }
 
   // Check expire of a subscriber
-  async checkExpire(userWallet) {
+  async checkExpire(params) {
     try {
-
+      let { userWallet } = params;
       let currentDate = new Date();
       let timeExpired;
-      
+
       let marketPackages = await prisma.marketpackages.findMany({
         where: {
           subscriber: {
-            equals: userWallet
-          }
-        }
-      })
+            equals: userWallet,
+          },
+        },
+      });
 
-      marketPackages.forEach((pkg) => {
+      marketPackages.forEach(async (pkg) => {
         if (pkg.packageType === 1) {
           // time Expired is 30 day
           timeExpired = 30;
-        } else if (pkg.packageType === 2)  {
+        } else if (pkg.packageType === 2) {
           // time Expired is 90 day
           timeExpired = 90;
-        }
-        else {
+        } else {
           // time Expired is 365 day
           timeExpired = 365;
-        }  
-
-        if (pkg.createdAt < currentDate + timeExpired) {
-          pkg.update({
-            status: 2
-          })
         }
-      })
 
+        const expireDate = new Date(pkg.createdAt);
+        expireDate.setDate(expireDate.getDate() + timeExpired);
+
+        if (expireDate.toISOString() < currentDate.toISOString()) {
+          await this.updateMarketPackage({ id: pkg.id, status: 2 });
+        }
+      });
     } catch (err) {
+      console.log(err);
+      throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateMarketPackage(params) {
+    try {
+      let {
+        id: params_id,
+        status: params_status,
+        collectionID: params_collectionID,
+        chainID: params_chainID,
+        paymentType: params_paymentType,
+        packageType: params_packageType,
+        price: params_Price,
+      } = params;
+
+      let {
+        status: current_status,
+        collectionID: current_collectionID,
+        chainID: current_chainID,
+        paymentType: current_paymentType,
+        packageType: current_packageType,
+        price: current_Price,
+      } = await prisma.marketpackages.findUnique({
+        where: {
+          id: params_id,
+        },
+      });
+
+      const marketPackage = await prisma.marketpackages.update({
+        where: {
+          id: params_id,
+        },
+        data: {
+          status: params_status ? params_status : current_status,
+          chainID: params_chainID ? params_chainID : current_chainID,
+          paymentType: params_paymentType
+            ? params_paymentType
+            : current_paymentType,
+          packageType: params_packageType
+            ? params_packageType
+            : current_packageType,
+          price: params_Price ? params_Price : current_Price,
+          collection: params_collectionID
+            ? { connect: { collectionID: params_collectionID } }
+            : { connect: { collectionID: current_collectionID } },
+        },
+      });
+
+      if (!marketPackage) {
+        throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+      } else {
+        return marketPackage;
+      }
+    } catch (err) {
+      console.log(err);
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
     }
   }
@@ -590,19 +662,21 @@ class UserService {
   // get all subscribe of a user
   async getSubscriber(params) {
     try {
-      let { userWallet } = params
-
-      await checkExpire(userWallet)
-
+      let { userWallet } = params;
+      
       let marketPackages = await prisma.marketpackages.findMany({
         where: {
           subscriber: {
-            equals: userWallet
-          }
-        }
-      })
+            equals: userWallet,
+          },
+        },
+      });
 
-      return marketPackages;
+      if (marketPackages) {
+        return marketPackages;
+      } else {
+        throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+      }
     } catch (err) {
       console.log(err);
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
@@ -611,23 +685,47 @@ class UserService {
 
   async getSubscriberByID(params) {
     try {
-      let { userWallet, ID} = params
-
-      await checkExpire(userWallet)
+      let { userWallet, id } = params;
 
       let marketPackages = await prisma.marketpackages.findMany({
         where: {
           subscriber: {
-            equals: userWallet
+            equals: userWallet,
           },
           id: {
-            equals: ID
+            equals: id,
           },
-        }
-      })
+        },
+      });
 
       return marketPackages;
     } catch (err) {
+      throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getPackageType(params) {
+    try {
+      let { userWallet, collectionID } = params;
+      let marketPackages = await prisma.marketpackages.findMany({
+        where: {
+          subscriber: {
+            equals: userWallet,
+          },
+          collectionID: {
+            equals: collectionID,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: 1
+      });
+  
+      return marketPackages[0].packageType ? marketPackages[0].packageType : 0;
+
+    } catch (err) {
+      console.log(err);
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
     }
   }
