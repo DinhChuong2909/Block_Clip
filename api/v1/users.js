@@ -431,6 +431,8 @@ router.get("/subscribed", verifyToken, async (req, res) => {
   try {
     const collectionID = req.query.collectionID;
     let params = { userWallet: req.userWallet, collectionID };
+    await userServiceInstance.checkExpire(params);
+
     let packageType = await userServiceInstance.getPackageType(params);
 
     if (packageType) {
