@@ -403,6 +403,12 @@ router.get("/subscribers/:subscriberID", verifyToken, async (req, res) => {
     let id = req.params.subscriberID;
     let params = { userWallet: req.userWallet, id };
 
+    if (!params.id) {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+        .json({ message: constants.MESSAGES.INPUT_VALIDATION_ERROR });
+    }
+
     await userServiceInstance.checkExpire(params);
 
     let subscribers = await userServiceInstance.getSubscriberByID(params);
@@ -431,6 +437,13 @@ router.get("/subscribed", verifyToken, async (req, res) => {
   try {
     const collectionID = req.query.collectionID;
     let params = { userWallet: req.userWallet, collectionID };
+
+    if (!params.collectionID) {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+        .json({ message: constants.MESSAGES.INPUT_VALIDATION_ERROR });
+    }
+
     await userServiceInstance.checkExpire(params);
 
     let packageType = await userServiceInstance.getPackageType(params);
