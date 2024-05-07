@@ -219,9 +219,17 @@ class PackageService {
         take: 1,
       });
 
-      return marketPackages[0].packageType ? marketPackages[0].packageType : 0;
+      if (marketPackages.length > 0) {
+        return {
+          "packageType": marketPackages[0].packageType
+        };
+      }
+      else 
+        return {
+          "packageType": 0
+        };
+      
     } catch (err) {
-      console.log(err);
       throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
     }
   }

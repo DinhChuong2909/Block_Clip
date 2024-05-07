@@ -23,7 +23,7 @@ class CollectionService {
           creator: { connect: { wallet: creatorCollection } },
           chainID: chainID,
           contractAddress: contractAddress,
-          paymentType: paymentType,
+          paymentType: paymentType ? paymentType : null,
           category: category,
           title_lowercase: title.toLowerCase(),
           bannerURL: bannerURL,
@@ -428,7 +428,7 @@ class CollectionService {
       let { collectionID: current_collectionID, title: current_title, description: current_description, bannerURL: current_bannerURL,
         active: current_active, disabled: current_disabled, averagePrice: current_averagePrice, totalViews: current_totalViews, package: current_package } = current;
       let { collectionID: params_collectionID, title: params_title, description: params_description, bannerURL: params_bannerURL,
-        active: params_active, disabled: params_disabled, averagePrice: params_averagePrice, totalViews: params_totalViews, package: params_package  } = params;
+        active: params_active, disabled: params_disabled, averagePrice: params_averagePrice, totalViews: params_totalViews, package: params_package } = params;
 
       // params_package.forEach(pkg => delete pkg.privilege);
 

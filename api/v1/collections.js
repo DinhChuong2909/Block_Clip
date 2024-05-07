@@ -54,7 +54,7 @@ router.post(
       if (collectionExists.length !== 0) {
         return res
           .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
-          .json({ message: constants.MESSAGES.INPUT_VALIDATION_ERROR });
+          .json({ message: 'Title of collection is already existed.' });
       }
 
       let collection = await collectionServiceInstance.createCollection(
@@ -355,7 +355,6 @@ router.put(
   async (req, res) => {
     try {
       let params = { ...req.params, ...req.body };
-      
 
       if (!params.collectionID) {
         return res

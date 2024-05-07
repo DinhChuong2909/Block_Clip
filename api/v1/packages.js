@@ -30,7 +30,6 @@ router.post("/", verifyToken, async (req, res) => {
         .json({ message: constants.RESPONSE_STATUS.FAILURE });
     }
   } catch (err) {
-    console.log(err);
     return res
       .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
       .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
@@ -85,6 +84,12 @@ router.get("/", verifyToken, async (req, res) => {
     let id = requestUtil.getKeyword(req.query, "id");
     let collectionID = requestUtil.getKeyword(req.query, "collectionID");
 
+    if (!id || !collectionID) {
+      return res
+        .status(constants.RESPONSE_STATUS_CODES.BAD_REQUEST)
+        .json({ message: constants.MESSAGES.INPUT_VALIDATION_ERROR });
+    }
+    
     await packageServiceInstance.checkExpire({ userWallet: req.userWallet });
 
     let subscribers = await packageServiceInstance.getSubscriber({
@@ -103,7 +108,6 @@ router.get("/", verifyToken, async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err);
     return res
       .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
       .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });
