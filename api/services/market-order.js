@@ -365,7 +365,7 @@ class MarketOrderService {
     try {
       let current = await this.getOrderByID(params);
       let { price: current_price, status: current_status,
-        buyer: current_buyer, tokenID: current_tokenID } = current;
+        buyer: current_buyer } = current;
       let { price: params_price, status: params_status,
         buyer: params_buyer, tokenURI: params_tokenURI, collectionID: params_collectionID } = params;
 
@@ -380,14 +380,13 @@ class MarketOrderService {
           },
         });
 
+
         let token = await tokenServiceInstance.updateTokenByTokenID({
-          tokenID: current_tokenID,
+          tokenID: current.tokenID,
           owner: params_buyer,
           tokenURI: params_tokenURI,
           collectionID: params_collectionID
         })
-
-        console.log(params)
 
         return { order, token: token.token, tokenURI: token.tokenURI };
       } else {
@@ -398,7 +397,6 @@ class MarketOrderService {
             status: params_status !== undefined ? params_status : current_status,
           },
         });
-
         return order;
       }
     } catch (err) {

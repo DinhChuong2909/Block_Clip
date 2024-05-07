@@ -42,52 +42,6 @@ class CollectionService {
     }
   }
 
-  async calcAvgPrice(where) {
-    try {
-      let collections = await prisma.collections.findMany({ where });
-
-      await Promise.all(collections.map(async (collection) => {
-        // calculate average price of a collection with active tokens
-        const tokens = await prisma.tokens.findMany({
-            where: {
-                collectionID: collection.collectionID,
-                active: true
-            }
-        });
-    
-        const tokenIDs = tokens.map(token => token.tokenID);
-    
-        const orders = await prisma.marketorders.findMany({
-            where: {
-              tokenID: {
-                in: tokenIDs
-              }
-            },
-            select: {
-                price: true
-            }
-        });
-    
-        const totalPrices = orders.reduce((acc, order) => acc + order.price, 0);
-        const avgPrice = totalPrices / orders.length;
-    
-        // Update the averagePrice field of the collection
-        await prisma.collections.update({
-            where: {
-                collectionID: collection.collectionID
-            },
-            data: {
-              averagePrice: avgPrice ? avgPrice : 0
-            }
-        });
-      }));
-    }
-    catch (err) {
-      console.log(err);
-      throw new Error(constants.MESSAGES.INTERNAL_SERVER_ERROR);
-    }
-  }
-
   async getCollections({ limit, offset, orderBy, chainID, title, creatorCollection, category, active }) {
     try {
       let where;
@@ -145,9 +99,6 @@ class CollectionService {
       } else {
         count = await prisma.collections.count({ where: { disabled: false, chainID: chainID } });
       }
-      
-      await this.calcAvgPrice(where);
-
       let collections = await prisma.collections.findMany({
         where,
         orderBy,
@@ -170,6 +121,22 @@ class CollectionService {
 
       //   collection.averagePrice = aggregations._avg
       // })
+
+      await collections.forEach(async (collection) => {
+        // calculate average price of a collection with active tokens
+        let where = {
+          collectionID: collection.collectionID,
+          active: true,
+        };
+        const tokens = await prisma.tokens.findMany({ where });
+        const count = await prisma.collections.count({ where });
+        let avg = 0;
+        tokens.forEach((token) => {
+          avg += token.price;
+        });
+
+        collection.averagePrice = avg / count;
+      });
 
       return {
         collections,
@@ -241,16 +208,12 @@ class CollectionService {
       } else {
         count = await prisma.collections.count({ where: { disabled: false, chainID: chainID } });
       }
-
-      await this.calcAvgPrice(where);
-
       let collections = await prisma.collections.findMany({
         where,
         orderBy,
         take: limit,
         skip: offset
       });
-
       return {
         collections,
         count,
@@ -285,15 +248,9 @@ class CollectionService {
   async collectionExists(params) {
     try {
       let { title } = params;
-      let where = { title_lowercase: title.toLowerCase() };
-
-      await this.calcAvgPrice(where);
-
       let collections = await prisma.collections.findMany({
-        where,
+        where: { title_lowercase: title.toLowerCase() },
       });
-
-
       return collections;
     } catch (err) {
       console.log(err);
@@ -325,28 +282,23 @@ class CollectionService {
     try {
       let title = params;
 
-      let where = {
-        OR: [
-          {
-            title: {
-              contains: title,
-            }
-          },
-          {
-            title_lowercase: {
-              contains: title,
-            }
-          },
-        ],
-        active: true
-      }
-
-      await this.calcAvgPrice(where);
-
       const collections = await prisma.collections.findMany({
-        where
+        where: {
+          OR: [
+            {
+              title: {
+                contains: title,
+              }
+            },
+            {
+              title_lowercase: {
+                contains: title,
+              }
+            },
+          ],
+          active: true
+        },
       });
-
 
       return collections;
     } catch (err) {
@@ -358,15 +310,9 @@ class CollectionService {
   async getCollectionByCollectionID(params) {
     try {
       let { collectionID } = params;
-      let where = { collectionID: collectionID };
-
-      await this.calcAvgPrice(where);
-
       let collections = await prisma.collections.findMany({
-        where,
+        where: { collectionID: collectionID },
       });
-
-
       return collections.at(0);
     } catch (err) {
       console.log(err);
@@ -377,16 +323,9 @@ class CollectionService {
   async getCollectionByID(params) {
     try {
       let { id } = params;
-
-      let where = { id: id };
-
-      await this.calcAvgPrice(where);
-
       let collections = await prisma.collections.findMany({
-        where,
+        where: { id: id },
       });
-
-
       return collections.at(0);
     } catch (err) {
       console.log(err);
@@ -474,9 +413,11 @@ class CollectionService {
     try {
       let current = await this.getCollectionByCollectionID(params);
       let { collectionID: current_collectionID, title: current_title, description: current_description, bannerURL: current_bannerURL,
-        active: current_active, disabled: current_disabled, averagePrice: current_averagePrice, totalViews: current_totalViews, package: current_package } = current;
+        active: current_active, disabled: current_disabled, averagePrice: current_averagePrice, totalViews: current_totalViews, 
+        package: current_package } = current;
       let { collectionID: params_collectionID, title: params_title, description: params_description, bannerURL: params_bannerURL,
-        active: params_active, disabled: params_disabled, averagePrice: params_averagePrice, totalViews: params_totalViews, package: params_package } = params;
+        active: params_active, disabled: params_disabled, averagePrice: params_averagePrice, totalViews: params_totalViews, 
+        package: params_package } = params;
 
       params_package.forEach(pkg => delete pkg.privilege);
 

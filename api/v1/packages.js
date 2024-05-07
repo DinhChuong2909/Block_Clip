@@ -30,6 +30,7 @@ router.post("/", verifyToken, async (req, res) => {
         .json({ message: constants.RESPONSE_STATUS.FAILURE });
     }
   } catch (err) {
+    console.log(err);
     return res
       .status(constants.RESPONSE_STATUS_CODES.INTERNAL_SERVER_ERROR)
       .json({ message: constants.MESSAGES.INTERNAL_SERVER_ERROR });

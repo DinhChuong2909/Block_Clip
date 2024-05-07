@@ -141,8 +141,6 @@ router.get("/myFriends",
       let orderBy = requestUtil.getSortBy(req.query, "+id");
       let wallet = req.userWallet;
 
-      wallet = "0xCf56d1C5b9f0ac7dCaE5399e5f82f29066d978bc";
-
       let users = await friendServiceInstance.getListOfMyFriends({
         wallet, limit, offset, orderBy
       });
@@ -178,8 +176,6 @@ router.get("/tokens",
       let offset = requestUtil.getOffset(req.query);
       let orderBy = requestUtil.getSortBy(req.query, "+id");
       let wallet = req.userWallet;
-
-      wallet = "0xCf56d1C5b9f0ac7dCaE5399e5f82f29066d978bc";
 
       let tokens = await friendServiceInstance.getTokensOfFriends({
         wallet, limit, offset, orderBy
