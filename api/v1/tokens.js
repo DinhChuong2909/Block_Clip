@@ -290,18 +290,18 @@ router.post(
       let source;
 
       // ?mode=public || ?mode=commercial
-      if (mode === constants.MODE.PUBLIC || mode === constants.MODE.COMMERCIAL ) {
+      if (parseInt(mode) === constants.MODE.PUBLIC || parseInt(mode)  === constants.MODE.COMMERCIAL ) {
         // Flow: Upload original video
         await uploadVideo(inputVideo, inputVideo);
 
         await watermarkVideo(inputVideo, outputVideo);
         await encodeLSB(outputVideo, outputEncode, wallet);
 
-        if (mode === constants.MODE.PUBLIC) {
+        if (parseInt(mode) === constants.MODE.PUBLIC) {
           // Flow: Watermark -> Embed wallet address -> upload
           source = await tokenServiceInstance.uploadVideoToIPFS(outputEncode);
           await deleteTempVideo(outputEncode);
-        } else if (mode === constants.MODE.COMMERCIAL) {
+        } else if (parseInt(mode) === constants.MODE.COMMERCIAL) {
           // Create symmetric key
           let keyId = await createSymmetricKey("KeyName");
 
